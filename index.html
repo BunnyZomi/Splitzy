@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>หารด้วยกัน — หารบิลกับเพื่อน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+  :root{
+    --bg:#F3F1EA;
+    --surface:#FFFFFF;
+    --ink:#1C2321;
+    --ink-soft:#767E76;
+    --ink-faint:#A8ACA3;
+    --line:#E6E2D6;
+    --line-strong:#D8D3C3;
+    --accent:#0F8B7D;
+    --accent-dark:#0A6459;
+    --accent-tint:#E4F3EF;
+    --coral:#D8603F;
+    --coral-tint:#FBE9E2;
+    --gold:#C99A3E;
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:10px;
+    --shadow-card:0 1px 2px rgba(28,35,33,0.04), 0 8px 24px -12px rgba(28,35,33,0.12);
+    --shadow-pop:0 12px 40px -8px rgba(28,35,33,0.28);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  html,body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Sarabun',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.num-display,.tab-btn,.stat-value,.brand-name{
+    font-family:'Prompt',sans-serif;
+  }
+  .page{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:28px 14px 60px;
+  }
+  .app{
+    width:100%;
+    max-width:460px;
+  }
+
+  /* ---------- Header ---------- */
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .brand-mark{
+    width:38px;height:38px;
+    border-radius:11px;
+    background:linear-gradient(155deg,var(--accent),var(--accent-dark));
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    box-shadow:0 4px 10px -4px rgba(15,139,125,0.55);
+  }
+  .brand-mark svg{width:20px;height:20px;}
+  .brand-text{flex:1; min-width:0;}
+  .brand-name{font-size:17px;font-weight:600;color:var(--ink);line-height:1.2;}
+  .brand-sub{font-size:12px;color:var(--ink-soft);margin-top:1px;}
+  .icon-btn{
+    width:36px;height:36px;
+    border-radius:10px;
+    border:1px solid var(--line-strong);
+    background:var(--surface);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    color:var(--ink-soft);
+    transition:background .15s, color .15s, border-color .15s, transform .1s;
+    flex-shrink:0;
+  }
+  .icon-btn:hover{border-color:var(--accent); color:var(--accent);}
+  .icon-btn:active{transform:scale(0.94);}
+  .icon-btn svg{width:16px;height:16px;}
+
+  /* ---------- Receipt card ---------- */
+  .receipt{
+    background:var(--surface);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-card);
+    position:relative;
+    overflow:hidden;
+  }
+  .receipt::after{
+    content:"";
+    position:absolute;
+    left:0;right:0;bottom:0;
+    height:8px;
+    background-image:radial-gradient(circle at 8px 0, transparent 7px, var(--bg) 7.5px);
+    background-size:16px 8px;
+    background-repeat:repeat-x;
+  }
+  .title-row{
+    padding:22px 22px 4px;
+    text-align:center;
+  }
+  .bill-title{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    font-size:13px;
+    color:var(--ink-faint);
+    cursor:text;
+  }
+  .bill-title input{
+    font-family:'Sarabun',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink);
+    border:none;
+    background:transparent;
+    text-align:center;
+    outline:none;
+    width:180px;
+  }
+  .bill-title svg{width:12px;height:12px; flex-shrink:0;}
+
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    padding:14px 18px 18px;
+  }
+  .stat{text-align:center;}
+  .stat-label{font-size:11.5px; color:var(--ink-soft); margin-bottom:5px; letter-spacing:.2px;}
+  .stat-value{font-size:24px; font-weight:600; color:var(--ink);}
+  .stat-value.accent{color:var(--accent-dark);}
+
+  /* ---------- Tabs ---------- */
+  .tabs{
+    display:flex;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+  .tab-btn{
+    flex:1;
+    padding:13px 4px 12px;
+    text-align:center;
+    font-size:14px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:none;
+    border:none;
+    cursor:pointer;
+    position:relative;
+    transition:color .15s;
+  }
+  .tab-btn.active{color:var(--accent-dark); font-weight:600;}
+  .tab-indicator{
+    position:absolute;
+    bottom:-1px;
+    height:2.5px;
+    background:var(--accent);
+    border-radius:3px;
+    transition:left .25s cubic-bezier(.4,0,.2,1), width .25s cubic-bezier(.4,0,.2,1);
+  }
+
+  .panel{padding:16px 18px 20px; min-height:120px;}
+  .panel-hidden{display:none;}
+
+  /* ---------- People tab ---------- */
+  .row-table{width:100%; border-collapse:collapse;}
+  .row-table thead th{
+    font-size:11.5px; color:var(--ink-soft); font-weight:500;
+    text-align:left; padding-bottom:9px; border-bottom:1px solid var(--line);
+  }
+  .row-table thead th:not(:first-child){text-align:right;}
+  .row-table td{padding:11px 0; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle;}
+  .row-table td:not(:first-child){text-align:right; font-variant-numeric:tabular-nums;}
+  .row-table tbody tr:last-child td{border-bottom:none;}
+  .person-cell{display:flex; align-items:center; gap:9px;}
+  .avatar{
+    width:28px;height:28px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff; font-size:12px; font-weight:700; flex-shrink:0;
+    font-family:'Prompt',sans-serif;
+  }
+  .avatar.sm{width:22px;height:22px;font-size:10.5px;}
+  .person-name{font-weight:500;}
+  .credit-pos{color:var(--accent-dark); font-weight:600;}
+  .remove-x{
+    width:18px;height:18px;border-radius:50%;
+    border:none; background:var(--line); color:var(--ink-soft);
+    font-size:11px; line-height:18px; text-align:center; cursor:pointer;
+    margin-left:8px; flex-shrink:0; padding:0;
+  }
+  .remove-x:hover{background:var(--coral-tint); color:var(--coral);}
+
+  .add-inline{
+    display:flex; gap:8px; margin-top:16px;
+  }
+  .input{
+    flex:1;
+    border:1px solid var(--line-strong);
+    border-radius:var(--radius-sm);
+    padding:11px 13px;
+    font-family:'Sarabun',sans-serif;
+    font-size:14px;
+    background:var(--bg);
+    outline:none;
+    color:var(--ink);
+    transition:border-color .15s, background .15s;
+  }
+  .input:focus{border-color:var(--accent); background:var(--surface);}
+  .input::placeholder{color:var(--ink-faint);}
+
+  .btn{
+    border:none; border-radius:var(--radius-sm);
+    font-family:'Sarabun',sans-serif;
+    font-size:14px; font-weight:600;
+    padding:12px 18px; cursor:pointer;
+    transition:transform .1s, opacity .15s, background .15s;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{background:var(--accent); color:#fff;}
+  .btn-primary:hover{background:var(--accent-dark);}
+  .btn-primary:disabled{background:var(--line-strong); color:var(--ink-faint); cursor:not-allowed;}
+  .btn-ghost{background:transparent; color:var(--ink-soft); border:1px solid var(--line-strong);}
+  .btn-ghost:hover{border-color:var(--ink-soft); color:var(--ink);}
+  .btn-danger-ghost{background:transparent; color:var(--coral); border:1px solid var(--coral-tint);}
+  .btn-danger-ghost:hover{background:var(--coral-tint);}
+  .btn-block{width:100%;}
+  .btn-row{display:flex; gap:10px; margin-top:12px;}
+  .btn-row .btn{flex:1;}
+
+  .empty-state{
+    text-align:center; padding:36px 10px 20px; color:var(--ink-faint);
+  }
+  .empty-state svg{width:40px;height:40px; margin-bottom:10px; opacity:.6;}
+  .empty-state p{font-size:13.5px; margin:0;}
+
+  /* ---------- Items tab ---------- */
+  .item-card{
+    padding:13px 0; border-bottom:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
+  }
+  .item-card:last-child{border-bottom:none;}
+  .item-main{flex:1; min-width:0;}
+  .item-top{display:flex; align-items:center; gap:8px; margin-bottom:5px;}
+  .item-name{font-size:14.5px; font-weight:600; color:var(--ink);}
+  .item-date{font-size:11px; color:var(--ink-faint);}
+  .item-people{display:flex; align-items:center; gap:4px; margin-top:6px;}
+  .paid-by-tag{
+    font-size:11px; color:var(--ink-soft); display:flex; align-items:center; gap:5px; margin-bottom:2px;
+  }
+  .item-price-block{text-align:right; flex-shrink:0;}
+  .item-price{font-size:16px; font-weight:700; font-family:'Prompt',sans-serif; color:var(--ink);}
+  .item-per{font-size:11px; color:var(--ink-soft); margin-top:2px;}
+  .item-del{
+    border:none; background:none; color:var(--ink-faint); cursor:pointer; padding:2px; margin-top:4px;
+  }
+  .item-del:hover{color:var(--coral);}
+
+  /* ---------- Summary tab ---------- */
+  .settle-row{
+    display:flex; align-items:center; gap:10px;
+    padding:14px 4px; border-bottom:1px solid var(--line);
+  }
+  .settle-row:last-of-type{border-bottom:none;}
+  .settle-flow{flex:1; display:flex; align-items:center; gap:8px; min-width:0;}
+  .settle-name{font-size:12.5px; font-weight:600; flex-shrink:0;}
+  .settle-arrow{flex:1; height:16px; position:relative; min-width:30px;}
+  .settle-arrow svg{width:100%; height:100%; display:block; overflow:visible;}
+  .flow-line{stroke:var(--line-strong); stroke-width:1.6; fill:none;}
+  .flow-dash{stroke:var(--accent); stroke-width:1.6; fill:none; stroke-dasharray:4 5; animation:flowmove 1.1s linear infinite;}
+  @keyframes flowmove{to{stroke-dashoffset:-18;}}
+  .flow-head{fill:var(--accent);}
+  .settle-amount{
+    font-family:'Prompt',sans-serif; font-weight:600; font-size:14.5px; color:var(--accent-dark);
+    flex-shrink:0; min-width:64px; text-align:right;
+  }
+  .paid-toggle{
+    border:1px solid var(--line-strong); background:var(--surface);
+    border-radius:8px; padding:7px 12px; font-size:12.5px; font-weight:600;
+    color:var(--ink-soft); cursor:pointer; flex-shrink:0; white-space:nowrap;
+    transition:all .15s;
+  }
+  .paid-toggle.done{background:var(--accent-tint); border-color:var(--accent); color:var(--accent-dark);}
+
+  .note-box{
+    margin-top:16px; background:#FBF7EC; border:1px solid #EEE2C2; border-radius:var(--radius-md);
+    padding:13px 15px; font-size:12px; color:#8A6D2A; line-height:1.65;
+  }
+  .note-box b{color:#6E5620;}
+
+  .balance-mini{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px;}
+  .balance-chip{
+    display:flex; align-items:center; gap:7px;
+    background:var(--bg); border-radius:999px; padding:6px 12px 6px 6px; font-size:12px;
+  }
+  .balance-chip .amt{font-weight:700; font-family:'Prompt',sans-serif;}
+  .balance-chip .amt.pos{color:var(--accent-dark);}
+  .balance-chip .amt.neg{color:var(--coral);}
+
+  .section-label{font-size:11.5px; color:var(--ink-soft); font-weight:600; margin:2px 0 10px; letter-spacing:.3px;}
+
+  /* ---------- Bottom sheet / modal ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(20,24,22,0.42);
+    display:flex; align-items:flex-end; justify-content:center;
+    z-index:50; opacity:0; pointer-events:none; transition:opacity .2s;
+  }
+  .overlay.open{opacity:1; pointer-events:auto;}
+  .overlay.center{align-items:center; padding:20px;}
+  .sheet{
+    background:var(--surface); width:100%; max-width:460px;
+    border-radius:22px 22px 0 0; padding:6px 20px 22px;
+    max-height:88vh; overflow-y:auto;
+    transform:translateY(100%); transition:transform .28s cubic-bezier(.32,.72,0,1);
+  }
+  .overlay.open .sheet{transform:translateY(0);}
+  .dialog{
+    background:var(--surface); width:100%; max-width:340px; border-radius:var(--radius-lg);
+    padding:22px; transform:scale(.92); opacity:0; transition:transform .2s, opacity .2s;
+  }
+  .overlay.open .dialog{transform:scale(1); opacity:1;}
+  .sheet-handle{width:36px; height:4px; background:var(--line-strong); border-radius:3px; margin:8px auto 14px;}
+  .sheet-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;}
+  .sheet-head h3{margin:0; font-size:16.5px; font-weight:600;}
+  .field{margin-bottom:16px;}
+  .field-label{font-size:12.5px; color:var(--ink-soft); font-weight:500; margin-bottom:7px; display:flex; justify-content:space-between; align-items:center;}
+  .field-label .link-btn{color:var(--accent-dark); font-weight:600; cursor:pointer; font-size:12px;}
+  .char-count{color:var(--ink-faint); font-weight:400;}
+  .price-row{display:flex; align-items:center; gap:8px;}
+  .currency-prefix{font-size:14px; color:var(--ink-soft); font-weight:600;}
+  .two-col{display:flex; gap:10px;}
+  .two-col .field{flex:1;}
+  .pct-input{display:flex; align-items:center; border:1px solid var(--line-strong); border-radius:var(--radius-sm); background:var(--bg); overflow:hidden;}
+  .pct-input input{border:none; background:transparent; padding:11px 4px 11px 13px; font-size:14px; width:100%; outline:none; font-family:'Sarabun',sans-serif;}
+  .pct-input span{padding:0 12px; color:var(--ink-soft); font-size:13px;}
+  .total-preview{
+    text-align:center; font-size:12.5px; color:var(--ink-soft); margin:2px 0 16px;
+    background:var(--accent-tint); border-radius:10px; padding:9px;
+  }
+  .total-preview b{color:var(--accent-dark); font-family:'Prompt',sans-serif; font-size:15px;}
+  .chip-group{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    display:flex; align-items:center; gap:6px;
+    border:1.5px solid var(--line-strong); border-radius:999px; padding:6px 13px 6px 6px;
+    font-size:13px; font-weight:500; cursor:pointer; background:var(--surface); color:var(--ink);
+    transition:all .15s; user-select:none;
+  }
+  .chip.selected{border-color:var(--accent); background:var(--accent-tint); color:var(--accent-dark);}
+  .chip .avatar{width:20px;height:20px;font-size:9.5px;}
+
+  .toast{
+    position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff; padding:11px 20px; border-radius:999px;
+    font-size:13px; font-weight:500; opacity:0; pointer-events:none; transition:all .25s;
+    z-index:100; white-space:nowrap;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  .fab-row{display:flex; gap:10px; padding:4px 18px 22px;}
+
+  /* ---------- Receipt scan ---------- */
+  .scan-btn-secondary{
+    display:flex; align-items:center; justify-content:center; gap:7px;
+  }
+  .dropzone{
+    border:1.6px dashed var(--line-strong);
+    border-radius:var(--radius-md);
+    padding:30px 16px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+    background:var(--bg);
+  }
+  .dropzone:hover{border-color:var(--accent); background:var(--accent-tint);}
+  .dropzone svg{width:30px;height:30px; color:var(--ink-faint); margin-bottom:8px;}
+  .dropzone p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.6;}
+  .dropzone .hint{font-size:11.5px; color:var(--ink-faint); margin-top:4px;}
+
+  .preview-wrap{position:relative; border-radius:var(--radius-md); overflow:hidden; margin-bottom:14px;}
+  .preview-wrap img{width:100%; max-height:220px; object-fit:cover; display:block;}
+  .preview-change{
+    position:absolute; top:9px; right:9px; background:rgba(28,35,33,0.65); color:#fff;
+    border:none; border-radius:8px; padding:6px 11px; font-size:12px; cursor:pointer;
+    display:flex; align-items:center; gap:5px; font-family:'Sarabun',sans-serif;
+  }
+
+  .scan-state{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:34px 10px 26px; text-align:center;
+  }
+  .spinner{
+    width:30px;height:30px; border-radius:50%;
+    border:3px solid var(--line); border-top-color:var(--accent);
+    animation:spin .75s linear infinite; margin-bottom:14px;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .scan-state p{margin:0; font-size:13.5px; color:var(--ink-soft);}
+  .scan-error{
+    background:var(--coral-tint); color:#9A3D24; border-radius:var(--radius-md);
+    padding:13px 15px; font-size:13px; line-height:1.6; margin-bottom:6px;
+  }
+
+  .scan-row{
+    display:flex; align-items:center; gap:8px; padding:9px 0; border-bottom:1px solid var(--line);
+  }
+  .scan-row:last-child{border-bottom:none;}
+  .scan-row input.scan-name{flex:1; min-width:0;}
+  .scan-row input.scan-price{width:78px; text-align:right; flex-shrink:0;}
+  .scan-row .item-del{margin-top:0;}
+  .scan-total{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 2px; font-size:13.5px; color:var(--ink-soft); font-weight:600;
+    border-top:1.5px solid var(--line); margin-top:2px;
+  }
+  .scan-total b{font-family:'Prompt',sans-serif; font-size:16px; color:var(--accent-dark);}
+  .add-row-link{
+    font-size:12.5px; color:var(--accent-dark); font-weight:600; cursor:pointer;
+    display:inline-flex; align-items:center; gap:5px; margin-top:8px;
+  }
+
+  @media (max-width:380px){
+    .stat-value{font-size:20px;}
+    .settle-name{font-size:11.5px;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="app">
+
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 3h9l3 3v15H6V3z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M9 9h6M9 12.5h6M9 16h3.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <div class="brand-name">หารด้วยกัน</div>
+        <div class="brand-sub">หารค่าใช้จ่ายกับเพื่อน แบบไม่ปวดหัว</div>
+      </div>
+      <button class="icon-btn" id="lineLoginBtn" title="เข้าสู่ระบบด้วยไลน์" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C6.5 2 2 5.6 2 10c0 3.9 3.4 7.1 8 7.8v2.7c0 .3.3.5.6.4l3.6-2.2c4.6-.6 7.8-3.9 7.8-8.7C22 5.6 17.5 2 12 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="icon-btn" id="lineProfileChip" title="เพิ่มตัวเองในรายชื่อ" style="display:none; padding:0; overflow:hidden;">
+        <img id="lineProfileImg" src="" style="width:100%;height:100%;object-fit:cover;">
+      </button>
+      <button class="icon-btn" id="shareBtn" title="แชร์">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M8 12a3 3 0 1 0 0-6M16 19a3 3 0 1 0 0-6M8.7 10.3l6.6-3.6M8.7 13.7l6.6 3.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="16" cy="5" r="2.4" stroke="currentColor" stroke-width="1.7"/><circle cx="16" cy="19" r="2.4" stroke="currentColor" stroke-width="1.7"/></svg>
+      </button>
+      <button class="icon-btn" id="clearBtn" title="ล้างทั้งหมด">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 12a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2L7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <div class="receipt">
+      <div class="title-row">
+        <div class="bill-title" id="billTitleWrap">
+          <input id="billTitleInput" value="บิลไม่มีชื่อ" maxlength="30" size="12">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">รายการ</div>
+          <div class="stat-value" id="statItems">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">ราคารวม</div>
+          <div class="stat-value accent" id="statTotal">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">คน</div>
+          <div class="stat-value" id="statPeople">2</div>
+        </div>
+      </div>
+
+      <div class="tabs" id="tabs">
+        <button class="tab-btn active" data-tab="people">รายชื่อ</button>
+        <button class="tab-btn" data-tab="items">รายการ</button>
+        <button class="tab-btn" data-tab="summary">สรุปยอด</button>
+        <div class="tab-indicator" id="tabIndicator"></div>
+      </div>
+
+      <!-- PEOPLE PANEL -->
+      <div class="panel" id="panel-people">
+        <table class="row-table" id="peopleTable">
+          <thead>
+            <tr><th>ชื่อ</th><th>จ่ายก่อน</th><th>ต้องจ่าย</th><th>ได้เพิ่ม</th></tr>
+          </thead>
+          <tbody id="peopleTbody"></tbody>
+        </table>
+        <div class="add-inline">
+          <input class="input" id="newPersonInput" placeholder="กรอกชื่อ" maxlength="10">
+          <button class="btn btn-primary" id="addPersonBtn">เพิ่ม</button>
+        </div>
+      </div>
+
+      <!-- ITEMS PANEL -->
+      <div class="panel panel-hidden" id="panel-items">
+        <div id="itemsList"></div>
+        <div id="itemsEmpty" class="empty-state" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          <p>ยังไม่มีรายการ เพิ่มเองหรือถ่ายรูปใบเสร็จให้ AI อ่านให้ก็ได้</p>
+        </div>
+      </div>
+
+      <!-- SUMMARY PANEL -->
+      <div class="panel panel-hidden" id="panel-summary">
+        <div id="summaryContent"></div>
+      </div>
+
+      <div class="fab-row" id="fabRow"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Add item bottom sheet -->
+<div class="overlay" id="itemOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <h3>เพิ่มรายการ</h3>
+      <button class="icon-btn" id="closeItemSheet">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div class="field">
+      <div class="field-label">รายการ <span class="char-count" id="itemNameCount">0 / 25</span></div>
+      <input class="input" id="itemNameInput" maxlength="25" placeholder="เช่น ข้าวผัดกุ้ง">
+    </div>
+
+    <div class="field">
+      <div class="field-label">ราคา <span class="link-btn" id="toggleChargeBtn">+ เพิ่มเซอร์วิสชาร์จ/ภาษี</span></div>
+      <div class="price-row">
+        <span class="currency-prefix">฿</span>
+        <input class="input" id="itemPriceInput" inputmode="decimal" placeholder="0">
+      </div>
+    </div>
+
+    <div id="chargeFields" style="display:none;">
+      <div class="total-preview">ราคารวม <b id="totalPreview">0</b></div>
+      <div class="two-col">
+        <div class="field">
+          <div class="field-label">เซอร์วิสชาร์จ/อื่นๆ</div>
+          <div class="pct-input"><input id="serviceInput" inputmode="decimal" placeholder="0"><span>%</span></div>
+        </div>
+        <div class="field">
+          <div class="field-label">ภาษี</div>
+          <div class="pct-input"><input id="taxInput" inputmode="decimal" placeholder="0"><span>%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">คนหาร <span class="link-btn" id="selectAllBtn">เลือกทุกคน</span></div>
+      <div class="chip-group" id="splitChips"></div>
+    </div>
+
+    <div class="field" style="margin-bottom:8px;">
+      <div class="field-label">คนจ่าย</div>
+      <div class="chip-group" id="payerChips"></div>
+    </div>
+
+    <button class="btn btn-primary btn-block" id="submitItemBtn" style="margin-top:6px;">เพิ่มรายการ</button>
+  </div>
+</div>
+
+<!-- Scan receipt bottom sheet -->
+<div class="overlay" id="scanOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <h3>สแกนใบเสร็จด้วย AI</h3>
+      <button class="icon-btn" id="closeScanSheet">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div id="scanBody"></div>
+  </div>
+</div>
+
+<!-- Confirm clear dialog -->
+<div class="overlay center" id="clearOverlay">
+  <div class="dialog">
+    <h3 style="margin:0 0 8px; font-size:16px;">ล้างข้อมูลทั้งหมด?</h3>
+    <p style="margin:0 0 18px; font-size:13.5px; color:var(--ink-soft); line-height:1.6;">รายการและยอดค้างจ่ายทั้งหมดจะถูกลบ แต่รายชื่อจะยังคงอยู่</p>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="cancelClear">ยกเลิก</button>
+      <button class="btn btn-primary" id="confirmClear" style="background:var(--coral);">ล้างทั้งหมด</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =====================================================================
+     LINE LIFF SETUP
+     1. สร้าง Channel ประเภท "LINE Login" ที่ https://developers.line.biz
+     2. สร้าง LIFF app ในแชนแนลนั้น ตั้ง Endpoint URL = ลิงก์เว็บที่ host จริง (HTTPS)
+     3. คัดลอก LIFF ID ที่ได้มาแทนที่ค่าด้านล่างนี้
+     ก่อนตั้งค่า แอปนี้ยังใช้งานได้ปกติในเบราว์เซอร์ทั่วไป (ฟีเจอร์ไลน์จะถูกซ่อนไว้)
+     ===================================================================== */
+  var LIFF_ID = 'YOUR_LIFF_ID'; // TODO: ใส่ LIFF ID จริงตรงนี้ เช่น '1234567890-AbCdEfGh'
+
+  var lineProfile = null;
+
+  function initLiff(){
+    if(LIFF_ID === 'YOUR_LIFF_ID' || typeof liff === 'undefined') return; // ยังไม่ได้ตั้งค่า หรือ SDK โหลดไม่สำเร็จ
+    liff.init({liffId: LIFF_ID}).then(function(){
+      if(liff.isLoggedIn()){
+        liff.getProfile().then(function(profile){
+          lineProfile = profile;
+          showLineProfileChip(profile);
+        }).catch(function(){});
+      } else {
+        document.getElementById('lineLoginBtn').style.display = 'flex';
+      }
+    }).catch(function(err){
+      console.log('LIFF init failed (ปกติถ้าเปิดนอกแอปไลน์ หรือยังไม่ตั้งค่า LIFF ID):', err);
+    });
+  }
+
+  function showLineProfileChip(profile){
+    document.getElementById('lineLoginBtn').style.display = 'none';
+    var chip = document.getElementById('lineProfileChip');
+    var img = document.getElementById('lineProfileImg');
+    if(profile.pictureUrl) img.src = profile.pictureUrl;
+    chip.title = 'เพิ่ม "' + profile.displayName + '" ในรายชื่อ';
+    chip.style.display = 'flex';
+  }
+
+  var AVATAR_COLORS = ['#3E5C9A','#C1443B','#3E8FA0','#B98A2E','#7A5C9E','#5C8A63','#A85A8A','#4C7A6E'];
+
+  var state = {
+    billTitle: 'บิลไม่มีชื่อ',
+    people: [
+      {id:'p1', name:'A'},
+      {id:'p2', name:'B'}
+    ],
+    items: [],
+    settled: {},
+    activeTab: 'people',
+    chargeOpen: false,
+    draft: { split: [], payer: null }
+  };
+  var nextPersonId = 3;
+  var nextItemId = 1;
+
+  function colorFor(index){ return AVATAR_COLORS[index % AVATAR_COLORS.length]; }
+  function personIndex(id){ return state.people.findIndex(function(p){return p.id===id;}); }
+  function personById(id){ return state.people.find(function(p){return p.id===id;}); }
+  function fmt(n){
+    n = Math.round(n*100)/100;
+    if(Number.isInteger(n)) return n.toLocaleString('th-TH');
+    return n.toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+  function todayStr(){
+    var d = new Date();
+    var dd = String(d.getDate()).padStart(2,'0');
+    var mm = String(d.getMonth()+1).padStart(2,'0');
+    var yy = String(d.getFullYear()%100).padStart(2,'0');
+    return dd+'/'+mm+'/'+yy;
+  }
+
+  function showToast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(showToast._tm);
+    showToast._tm = setTimeout(function(){ t.classList.remove('show'); }, 1800);
+  }
+
+  /* ---------------- Computation ---------------- */
+  function itemFinalPrice(item){
+    var base = item.price || 0;
+    var withService = base * (1 + (item.servicePct||0)/100);
+    var withTax = withService * (1 + (item.taxPct||0)/100);
+    return withTax;
+  }
+
+  function computeBalances(){
+    var map = {};
+    state.people.forEach(function(p){ map[p.id] = {paid:0, owed:0}; });
+    state.items.forEach(function(item){
+      var final = itemFinalPrice(item);
+      if(map[item.paidBy]) map[item.paidBy].paid += final;
+      var n = item.split.length || 1;
+      var share = final / n;
+      item.split.forEach(function(pid){
+        if(map[pid]) map[pid].owed += share;
+      });
+    });
+    return map;
+  }
+
+  function simplifySettlement(balMap){
+    var arr = state.people.map(function(p){
+      return {id:p.id, name:p.name, net: (balMap[p.id].paid - balMap[p.id].owed)};
+    }).map(function(x){ x.net = Math.round(x.net*100)/100; return x; });
+
+    var creditors = arr.filter(function(x){return x.net > 0.005;}).sort(function(a,b){return b.net-a.net;});
+    var debtors = arr.filter(function(x){return x.net < -0.005;}).sort(function(a,b){return a.net-b.net;});
+    var txs = [];
+    var ci=0, di=0;
+    creditors = creditors.map(function(c){return {id:c.id,name:c.name,amt:c.net};});
+    debtors = debtors.map(function(d){return {id:d.id,name:d.name,amt:-d.net};});
+    while(ci<creditors.length && di<debtors.length){
+      var c = creditors[ci], d = debtors[di];
+      var amt = Math.min(c.amt, d.amt);
+      if(amt > 0.005){
+        txs.push({from:d.id, to:c.id, amount: Math.round(amt*100)/100});
+      }
+      c.amt -= amt; d.amt -= amt;
+      if(c.amt <= 0.005) ci++;
+      if(d.amt <= 0.005) di++;
+    }
+    return {txs:txs, balances:arr};
+  }
+
+  /* ---------------- Rendering ---------------- */
+  function renderAll(){
+    document.getElementById('billTitleInput').value = state.billTitle;
+    document.getElementById('statItems').textContent = state.items.length;
+    var total = state.items.reduce(function(s,it){ return s + itemFinalPrice(it); },0);
+    document.getElementById('statTotal').textContent = fmt(total);
+    document.getElementById('statPeople').textContent = state.people.length;
+
+    renderPeopleTab();
+    renderItemsTab();
+    renderSummaryTab();
+    renderFab();
+  }
+
+  function avatarEl(person, idx, sizeClass){
+    var span = document.createElement('div');
+    span.className = 'avatar' + (sizeClass ? ' '+sizeClass : '');
+    span.style.background = colorFor(idx);
+    span.textContent = (person.name||'?').trim().charAt(0).toUpperCase() || '?';
+    return span;
+  }
+
+  function renderPeopleTab(){
+    var bal = computeBalances();
+    var tbody = document.getElementById('peopleTbody');
+    tbody.innerHTML = '';
+    state.people.forEach(function(p, idx){
+      var b = bal[p.id] || {paid:0,owed:0};
+      var credit = Math.max(0, b.paid - b.owed);
+      var tr = document.createElement('tr');
+
+      var tdName = document.createElement('td');
+      var cell = document.createElement('div');
+      cell.className = 'person-cell';
+      cell.appendChild(avatarEl(p, idx));
+      var nm = document.createElement('span');
+      nm.className = 'person-name';
+      nm.textContent = p.name;
+      cell.appendChild(nm);
+      if(state.people.length > 1){
+        var rm = document.createElement('button');
+        rm.className = 'remove-x';
+        rm.textContent = '✕';
+        rm.title = 'ลบ '+p.name;
+        rm.addEventListener('click', function(){ removePerson(p.id); });
+        cell.appendChild(rm);
+      }
+      tdName.appendChild(cell);
+
+      var tdPaid = document.createElement('td');
+      tdPaid.textContent = fmt(b.paid);
+      var tdOwed = document.createElement('td');
+      tdOwed.textContent = fmt(b.owed);
+      var tdCredit = document.createElement('td');
+      tdCredit.textContent = fmt(credit);
+      if(credit > 0) tdCredit.className = 'credit-pos';
+
+      tr.appendChild(tdName); tr.appendChild(tdPaid); tr.appendChild(tdOwed); tr.appendChild(tdCredit);
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderItemsTab(){
+    var list = document.getElementById('itemsList');
+    var empty = document.getElementById('itemsEmpty');
+    list.innerHTML = '';
+    if(state.items.length === 0){
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+
+    state.items.slice().reverse().forEach(function(item){
+      var final = itemFinalPrice(item);
+      var per = final / (item.split.length||1);
+      var payer = personById(item.paidBy);
+      var payerIdx = personIndex(item.paidBy);
+
+      var card = document.createElement('div');
+      card.className = 'item-card';
+
+      var main = document.createElement('div');
+      main.className = 'item-main';
+
+      var top = document.createElement('div');
+      top.className = 'item-top';
+      var nameEl = document.createElement('div'); nameEl.className='item-name'; nameEl.textContent = item.name;
+      var dateEl = document.createElement('div'); dateEl.className='item-date'; dateEl.textContent = item.date;
+      top.appendChild(dateEl); top.appendChild(nameEl);
+      main.appendChild(top);
+
+      if(payer){
+        var pbt = document.createElement('div');
+        pbt.className = 'paid-by-tag';
+        var av = avatarEl(payer, payerIdx, 'sm');
+        pbt.appendChild(av);
+        var txt = document.createElement('span'); txt.textContent = 'จ่ายโดย ' + payer.name;
+        pbt.appendChild(txt);
+        main.appendChild(pbt);
+      }
+
+      var peopleRow = document.createElement('div');
+      peopleRow.className = 'item-people';
+      item.split.forEach(function(pid){
+        var pp = personById(pid);
+        if(!pp) return;
+        peopleRow.appendChild(avatarEl(pp, personIndex(pid), 'sm'));
+      });
+      main.appendChild(peopleRow);
+
+      var priceBlock = document.createElement('div');
+      priceBlock.className = 'item-price-block';
+      var priceEl = document.createElement('div'); priceEl.className='item-price'; priceEl.textContent = fmt(final);
+      var perEl = document.createElement('div'); perEl.className='item-per'; perEl.textContent = 'คนละ ' + fmt(per);
+      var delBtn = document.createElement('button');
+      delBtn.className = 'item-del';
+      delBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 12a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2L7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      delBtn.addEventListener('click', function(){ removeItem(item.id); });
+      priceBlock.appendChild(priceEl); priceBlock.appendChild(perEl); priceBlock.appendChild(delBtn);
+
+      card.appendChild(main); card.appendChild(priceBlock);
+      list.appendChild(card);
+    });
+  }
+
+  function renderSummaryTab(){
+    var el = document.getElementById('summaryContent');
+    el.innerHTML = '';
+    if(state.items.length === 0){
+      el.innerHTML = '<div class="empty-state">' +
+        '<svg viewBox="0 0 24 24" fill="none"><path d="M12 21c-4-3-8-6.5-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4.5-4 8-10 11z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>' +
+        '<p>ยังไม่มีรายการค่าใช้จ่าย<br>เพิ่มรายการก่อนเพื่อดูสรุปยอด</p></div>';
+      return;
+    }
+
+    var bal = computeBalances();
+    var result = simplifySettlement(bal);
+
+    var balWrap = document.createElement('div');
+    balWrap.className = 'balance-mini';
+    result.balances.forEach(function(b){
+      var idx = personIndex(b.id);
+      var chip = document.createElement('div');
+      chip.className = 'balance-chip';
+      chip.appendChild(avatarEl(personById(b.id), idx, 'sm'));
+      var amt = document.createElement('span');
+      amt.className = 'amt ' + (b.net >= 0 ? 'pos' : 'neg');
+      amt.textContent = (b.net>=0?'+':'-') + fmt(Math.abs(b.net));
+      chip.appendChild(amt);
+      balWrap.appendChild(chip);
+    });
+    el.appendChild(balWrap);
+
+    var label = document.createElement('div');
+    label.className = 'section-label';
+    label.style.marginTop = '14px';
+    label.textContent = 'ใครโอนให้ใคร';
+    el.appendChild(label);
+
+    if(result.txs.length === 0){
+      var okDiv = document.createElement('div');
+      okDiv.style.cssText = 'padding:16px 4px; color:var(--ink-soft); font-size:13.5px; text-align:center;';
+      okDiv.textContent = 'ยอดเท่ากันหมดแล้ว ไม่มีใครต้องโอน 🎉';
+      el.appendChild(okDiv);
+    } else {
+      result.txs.forEach(function(tx, i){
+        var key = tx.from+'->'+tx.to;
+        var fromP = personById(tx.from), toP = personById(tx.to);
+        var fromIdx = personIndex(tx.from), toIdx = personIndex(tx.to);
+        var row = document.createElement('div');
+        row.className = 'settle-row';
+
+        var flow = document.createElement('div');
+        flow.className = 'settle-flow';
+
+        var fromWrap = document.createElement('div');
+        fromWrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;';
+        fromWrap.appendChild(avatarEl(fromP, fromIdx));
+        var fromName = document.createElement('div'); fromName.className='settle-name'; fromName.textContent = fromP.name;
+        fromWrap.appendChild(fromName);
+
+        var arrowWrap = document.createElement('div');
+        arrowWrap.className = 'settle-arrow';
+        var uid = 'flow'+i;
+        arrowWrap.innerHTML = '<svg viewBox="0 0 100 16" preserveAspectRatio="none">' +
+          '<line class="flow-line" x1="2" y1="8" x2="94" y2="8"/>' +
+          '<line class="flow-dash" x1="2" y1="8" x2="94" y2="8"/>' +
+          '<path class="flow-head" d="M94 8 L86 4 L86 12 Z"/>' +
+          '</svg>';
+
+        var toWrap = document.createElement('div');
+        toWrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;';
+        toWrap.appendChild(avatarEl(toP, toIdx));
+        var toName = document.createElement('div'); toName.className='settle-name'; toName.textContent = toP.name;
+        toWrap.appendChild(toName);
+
+        flow.appendChild(fromWrap); flow.appendChild(arrowWrap); flow.appendChild(toWrap);
+
+        var amountEl = document.createElement('div');
+        amountEl.className = 'settle-amount';
+        amountEl.textContent = fmt(tx.amount) + '฿';
+
+        var toggle = document.createElement('button');
+        var isPaid = !!state.settled[key];
+        toggle.className = 'paid-toggle' + (isPaid ? ' done':'');
+        toggle.textContent = isPaid ? '✓ จ่ายแล้ว' : 'จ่าย';
+        toggle.addEventListener('click', function(){
+          state.settled[key] = !state.settled[key];
+          renderSummaryTab();
+        });
+
+        row.appendChild(flow);
+        row.appendChild(amountEl);
+        row.appendChild(toggle);
+        el.appendChild(row);
+      });
+    }
+
+    var note = document.createElement('div');
+    note.className = 'note-box';
+    note.innerHTML = '<b>หมายเหตุ:</b> ระบบคำนวณแบบตัดยอดสุทธิ เพื่อให้จำนวนครั้งในการโอนน้อยที่สุด เช่น ถ้า A ต้องโอนให้ B และ B ต้องโอนให้ C ในจำนวนเท่ากัน ระบบจะให้ A โอนตรงให้ C แทนในครั้งเดียว';
+    el.appendChild(note);
+  }
+
+  function renderFab(){
+    var row = document.getElementById('fabRow');
+    row.innerHTML = '';
+    if(state.activeTab === 'people'){
+      // input row already inline in panel
+    } else if(state.activeTab === 'items'){
+      var scanBtn = document.createElement('button');
+      scanBtn.className = 'btn btn-ghost scan-btn-secondary';
+      scanBtn.style.flex = '0 0 46px';
+      scanBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 8V6a2 2 0 0 1 2-2h2M4 16v2a2 2 0 0 0 2 2h2M20 8V6a2 2 0 0 0-2-2h-2M20 16v2a2 2 0 0 1-2 2h-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="3.4" stroke="currentColor" stroke-width="1.8"/></svg>';
+      scanBtn.title = 'สแกนใบเสร็จด้วย AI';
+      scanBtn.addEventListener('click', openScanSheet);
+      var b = document.createElement('button');
+      b.className = 'btn btn-primary';
+      b.style.flex = '1';
+      b.textContent = '+ เพิ่มรายการ';
+      b.addEventListener('click', openItemSheet);
+      row.appendChild(scanBtn);
+      row.appendChild(b);
+    } else if(state.activeTab === 'summary'){
+      var s = document.createElement('button');
+      s.className = 'btn btn-ghost btn-block';
+      s.textContent = 'คัดลอกสรุปยอด';
+      s.addEventListener('click', copySummary);
+      row.appendChild(s);
+    }
+  }
+
+  /* ---------------- Actions ---------------- */
+  function addPerson(){
+    var input = document.getElementById('newPersonInput');
+    var name = input.value.trim();
+    if(!name) return;
+    if(state.people.length >= 20){ showToast('เพิ่มได้สูงสุด 20 คน'); return; }
+    state.people.push({id:'p'+(nextPersonId++), name:name});
+    input.value = '';
+    renderAll();
+    input.focus();
+  }
+
+  function removePerson(id){
+    if(state.people.length <= 1){ showToast('ต้องมีอย่างน้อย 1 คน'); return; }
+    state.people = state.people.filter(function(p){return p.id!==id;});
+    state.items.forEach(function(it){
+      it.split = it.split.filter(function(pid){return pid!==id;});
+      if(it.paidBy === id) it.paidBy = state.people[0] ? state.people[0].id : null;
+    });
+    state.items = state.items.filter(function(it){ return it.split.length > 0; });
+    renderAll();
+  }
+
+  function removeItem(id){
+    state.items = state.items.filter(function(it){return it.id!==id;});
+    renderAll();
+  }
+
+  function copySummary(){
+    var bal = computeBalances();
+    var result = simplifySettlement(bal);
+    var lines = [state.billTitle, ''];
+    if(result.txs.length===0){
+      lines.push('ยอดเท่ากันหมดแล้ว ไม่มีใครต้องโอน');
+    } else {
+      result.txs.forEach(function(tx){
+        lines.push(personById(tx.from).name + ' → ' + personById(tx.to).name + ' : ' + fmt(tx.amount) + '฿');
+      });
+    }
+    var text = lines.join('\n');
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ showToast('คัดลอกสรุปยอดแล้ว'); })
+        .catch(function(){ showToast('คัดลอกไม่สำเร็จ'); });
+    } else {
+      showToast('คัดลอกไม่สำเร็จ');
+    }
+  }
+
+  /* ---------------- Tabs ---------------- */
+  function setTab(tab){
+    state.activeTab = tab;
+    ['people','items','summary'].forEach(function(t){
+      document.getElementById('panel-'+t).classList.toggle('panel-hidden', t!==tab);
+    });
+    document.querySelectorAll('.tab-btn').forEach(function(btn){
+      btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+    positionIndicator();
+    renderFab();
+  }
+  function positionIndicator(){
+    var activeBtn = document.querySelector('.tab-btn.active');
+    var ind = document.getElementById('tabIndicator');
+    if(!activeBtn) return;
+    ind.style.left = activeBtn.offsetLeft + 'px';
+    ind.style.width = activeBtn.offsetWidth + 'px';
+  }
+
+  /* ---------------- Add item sheet ---------------- */
+  function openItemSheet(){
+    document.getElementById('itemNameInput').value = '';
+    document.getElementById('itemPriceInput').value = '';
+    document.getElementById('serviceInput').value = '';
+    document.getElementById('taxInput').value = '';
+    document.getElementById('chargeFields').style.display = 'none';
+    document.getElementById('toggleChargeBtn').textContent = '+ เพิ่มเซอร์วิสชาร์จ/ภาษี';
+    document.getElementById('itemNameCount').textContent = '0 / 25';
+    state.draft.split = state.people.map(function(p){return p.id;});
+    state.draft.payer = state.people[0] ? state.people[0].id : null;
+    renderChips();
+    updateTotalPreview();
+    document.getElementById('itemOverlay').classList.add('open');
+    setTimeout(function(){ document.getElementById('itemNameInput').focus(); }, 260);
+  }
+  function closeItemSheet(){
+    document.getElementById('itemOverlay').classList.remove('open');
+  }
+
+  function renderChips(){
+    var splitWrap = document.getElementById('splitChips');
+    var payerWrap = document.getElementById('payerChips');
+    splitWrap.innerHTML = ''; payerWrap.innerHTML = '';
+    state.people.forEach(function(p, idx){
+      var chip = document.createElement('div');
+      chip.className = 'chip' + (state.draft.split.indexOf(p.id) > -1 ? ' selected' : '');
+      chip.appendChild(avatarEl(p, idx));
+      var span = document.createElement('span'); span.textContent = p.name;
+      chip.appendChild(span);
+      chip.addEventListener('click', function(){
+        var i = state.draft.split.indexOf(p.id);
+        if(i>-1) state.draft.split.splice(i,1); else state.draft.split.push(p.id);
+        renderChips();
+      });
+      splitWrap.appendChild(chip);
+
+      var pchip = document.createElement('div');
+      pchip.className = 'chip' + (state.draft.payer === p.id ? ' selected' : '');
+      pchip.appendChild(avatarEl(p, idx));
+      var pspan = document.createElement('span'); pspan.textContent = p.name;
+      pchip.appendChild(pspan);
+      pchip.addEventListener('click', function(){
+        state.draft.payer = p.id;
+        renderChips();
+      });
+      payerWrap.appendChild(pchip);
+    });
+  }
+
+  function updateTotalPreview(){
+    var price = parseFloat(document.getElementById('itemPriceInput').value) || 0;
+    var svc = parseFloat(document.getElementById('serviceInput').value) || 0;
+    var tax = parseFloat(document.getElementById('taxInput').value) || 0;
+    var total = price * (1+svc/100) * (1+tax/100);
+    document.getElementById('totalPreview').textContent = fmt(total);
+  }
+
+  function submitItem(){
+    var name = document.getElementById('itemNameInput').value.trim();
+    var price = parseFloat(document.getElementById('itemPriceInput').value);
+    if(!name){ showToast('กรุณากรอกชื่อรายการ'); return; }
+    if(!price || price <= 0){ showToast('กรุณากรอกราคา'); return; }
+    if(state.draft.split.length === 0){ showToast('เลือกคนหารอย่างน้อย 1 คน'); return; }
+    if(!state.draft.payer){ showToast('เลือกคนจ่าย'); return; }
+
+    var svc = parseFloat(document.getElementById('serviceInput').value) || 0;
+    var tax = parseFloat(document.getElementById('taxInput').value) || 0;
+
+    state.items.push({
+      id: 'i'+(nextItemId++),
+      name: name,
+      price: price,
+      servicePct: svc,
+      taxPct: tax,
+      split: state.draft.split.slice(),
+      paidBy: state.draft.payer,
+      date: todayStr()
+    });
+    closeItemSheet();
+    renderAll();
+    showToast('เพิ่มรายการแล้ว');
+  }
+
+  /* ---------------- Receipt scan (AI) ---------------- */
+  var scanState = {
+    step: 'upload',        // upload | loading | error | review
+    base64: null,
+    mediaType: null,
+    items: [],             // {id, name, price}
+    split: [],
+    payer: null,
+    errorMsg: ''
+  };
+  var nextScanRowId = 1;
+
+  function openScanSheet(){
+    scanState.step = 'upload';
+    scanState.base64 = null;
+    scanState.mediaType = null;
+    scanState.items = [];
+    scanState.errorMsg = '';
+    scanState.split = state.people.map(function(p){return p.id;});
+    scanState.payer = state.people[0] ? state.people[0].id : null;
+    renderScanBody();
+    document.getElementById('scanOverlay').classList.add('open');
+  }
+  function closeScanSheet(){
+    document.getElementById('scanOverlay').classList.remove('open');
+  }
+
+  function fileToBase64(file){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(){ resolve(reader.result.split(',')[1]); };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderScanBody(){
+    var body = document.getElementById('scanBody');
+    body.innerHTML = '';
+
+    if(scanState.step === 'upload'){
+      if(!scanState.base64){
+        var dz = document.createElement('label');
+        dz.className = 'dropzone';
+        dz.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M4 8V6a2 2 0 0 1 2-2h2M4 16v2a2 2 0 0 0 2 2h2M20 8V6a2 2 0 0 0-2-2h-2M20 16v2a2 2 0 0 1-2 2h-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="12" r="3.4" stroke="currentColor" stroke-width="1.6"/></svg>' +
+          '<p>แตะเพื่อถ่ายรูป หรือเลือกรูปใบเสร็จ</p><div class="hint">รองรับ JPG, PNG, WEBP</div>' +
+          '<input type="file" accept="image/*" capture="environment" style="display:none;" id="receiptFileInput">';
+        body.appendChild(dz);
+        document.getElementById('receiptFileInput').addEventListener('change', onReceiptFileChange);
+      } else {
+        var wrap = document.createElement('div');
+        wrap.className = 'preview-wrap';
+        var img = document.createElement('img');
+        img.src = 'data:' + scanState.mediaType + ';base64,' + scanState.base64;
+        var changeBtn = document.createElement('button');
+        changeBtn.className = 'preview-change';
+        changeBtn.textContent = 'เปลี่ยนรูป';
+        changeBtn.addEventListener('click', function(){
+          scanState.base64 = null; scanState.mediaType = null; renderScanBody();
+        });
+        wrap.appendChild(img); wrap.appendChild(changeBtn);
+        body.appendChild(wrap);
+
+        var goBtn = document.createElement('button');
+        goBtn.className = 'btn btn-primary btn-block';
+        goBtn.textContent = 'อ่านใบเสร็จด้วย AI';
+        goBtn.addEventListener('click', startScan);
+        body.appendChild(goBtn);
+      }
+    }
+
+    else if(scanState.step === 'loading'){
+      var loading = document.createElement('div');
+      loading.className = 'scan-state';
+      loading.innerHTML = '<div class="spinner"></div><p>กำลังอ่านรายการจากใบเสร็จ...</p>';
+      body.appendChild(loading);
+    }
+
+    else if(scanState.step === 'error'){
+      var err = document.createElement('div');
+      err.className = 'scan-error';
+      err.textContent = scanState.errorMsg || 'อ่านใบเสร็จไม่สำเร็จ ลองอีกครั้งหรือเพิ่มรายการเอง';
+      body.appendChild(err);
+      var retryRow = document.createElement('div');
+      retryRow.className = 'btn-row';
+      var retryBtn = document.createElement('button');
+      retryBtn.className = 'btn btn-primary'; retryBtn.textContent = 'ลองอีกครั้ง';
+      retryBtn.addEventListener('click', function(){ scanState.step='upload'; renderScanBody(); });
+      var manualBtn = document.createElement('button');
+      manualBtn.className = 'btn btn-ghost'; manualBtn.textContent = 'เพิ่มเอง';
+      manualBtn.addEventListener('click', function(){ closeScanSheet(); openItemSheet(); });
+      retryRow.appendChild(retryBtn); retryRow.appendChild(manualBtn);
+      body.appendChild(retryRow);
+    }
+
+    else if(scanState.step === 'review'){
+      renderScanReview(body);
+    }
+  }
+
+  function onReceiptFileChange(e){
+    var file = e.target.files && e.target.files[0];
+    if(!file) return;
+    var mt = file.type || 'image/jpeg';
+    if(mt.indexOf('image/') !== 0){ showToast('กรุณาเลือกไฟล์รูปภาพ'); return; }
+    fileToBase64(file).then(function(b64){
+      scanState.base64 = b64;
+      scanState.mediaType = mt;
+      renderScanBody();
+    }).catch(function(){ showToast('อ่านไฟล์ไม่สำเร็จ'); });
+  }
+
+  function startScan(){
+    scanState.step = 'loading';
+    renderScanBody();
+
+    var promptText = 'อ่านใบเสร็จรับเงินในรูปภาพนี้ แล้วตอบกลับเป็น JSON เท่านั้น ห้ามมีข้อความอื่น คำอธิบาย หรือ markdown code block ใดๆ ทั้งสิ้น\n' +
+      'รูปแบบที่ต้องการ: {"items":[{"name":"ชื่อรายการ","price":ราคาต่อรายการเป็นตัวเลข}],"servicePercent":ตัวเลขเปอร์เซ็นต์เซอร์วิสชาร์จถ้ามีระบุในใบเสร็จ ไม่งั้นใส่ 0,"taxPercent":ตัวเลขเปอร์เซ็นต์ภาษีถ้ามีระบุ ไม่งั้นใส่ 0}\n' +
+      'กฎ: ห้ามรวมรายการยอดรวม (total), ยอดก่อนภาษี (subtotal), เงินทอน, หรือส่วนลดรวมท้ายบิล เป็นรายการสินค้า ถ้าอ่านตัวเลขไม่ชัดให้ประมาณค่าที่สมเหตุสมผลที่สุดจากบริบท ชื่อรายการให้สั้นกระชับ ถ้าใบเสร็จเป็นภาษาอื่น ให้แปลชื่อรายการเป็นภาษาไทยแบบสั้นๆ';
+
+    fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            {type:'image', source:{type:'base64', media_type: scanState.mediaType, data: scanState.base64}},
+            {type:'text', text: promptText}
+          ]
+        }]
+      })
+    }).then(function(res){
+      if(!res.ok) throw new Error('API error ' + res.status);
+      return res.json();
+    }).then(function(data){
+      var textOut = (data.content || []).map(function(c){ return c.text || ''; }).join('\n');
+      var clean = textOut.replace(/```json/gi,'').replace(/```/g,'').trim();
+      var parsed;
+      try { parsed = JSON.parse(clean); }
+      catch(e){ throw new Error('อ่านผลลัพธ์ไม่สำเร็จ'); }
+
+      var rawItems = (parsed && parsed.items) || [];
+      if(!rawItems.length) throw new Error('ไม่พบรายการสินค้าในใบเสร็จ ลองถ่ายรูปให้ชัดขึ้น');
+
+      scanState.items = rawItems.map(function(it){
+        return {
+          id: 's'+(nextScanRowId++),
+          name: (it.name || 'รายการ').toString().slice(0,25),
+          price: Math.round((parseFloat(it.price)||0)*100)/100
+        };
+      });
+      scanState.servicePct = parseFloat(parsed.servicePercent) || 0;
+      scanState.taxPct = parseFloat(parsed.taxPercent) || 0;
+      scanState.step = 'review';
+      renderScanBody();
+    }).catch(function(err){
+      scanState.step = 'error';
+      scanState.errorMsg = (err && err.message) ? err.message : 'อ่านใบเสร็จไม่สำเร็จ ลองอีกครั้งหรือเพิ่มรายการเอง';
+      renderScanBody();
+    });
+  }
+
+  function renderScanReview(body){
+    var note = document.createElement('div');
+    note.className = 'field-label';
+    note.style.marginBottom = '10px';
+    note.textContent = 'ตรวจสอบรายการก่อนเพิ่ม (แก้ไขได้)';
+    body.appendChild(note);
+
+    var listWrap = document.createElement('div');
+    scanState.items.forEach(function(row){
+      listWrap.appendChild(buildScanRow(row));
+    });
+    body.appendChild(listWrap);
+
+    var addLink = document.createElement('div');
+    addLink.className = 'add-row-link';
+    addLink.textContent = '+ เพิ่มรายการที่ขาดไป';
+    addLink.addEventListener('click', function(){
+      var newRow = {id:'s'+(nextScanRowId++), name:'', price:0};
+      scanState.items.push(newRow);
+      renderScanBody();
+    });
+    body.appendChild(addLink);
+
+    var total = scanState.items.reduce(function(s,it){return s+(it.price||0);},0) * (1+(scanState.servicePct||0)/100) * (1+(scanState.taxPct||0)/100);
+    var totalRow = document.createElement('div');
+    totalRow.className = 'scan-total';
+    var chargeNote = (scanState.servicePct || scanState.taxPct) ? ' (รวมเซอร์วิส '+(scanState.servicePct||0)+'% + ภาษี '+(scanState.taxPct||0)+'%)' : '';
+    totalRow.innerHTML = '<span>รวมทั้งหมด'+chargeNote+'</span><b>' + fmt(total) + '฿</b>';
+    body.appendChild(totalRow);
+
+    var splitLabel = document.createElement('div');
+    splitLabel.className = 'field-label';
+    splitLabel.style.margin = '16px 0 8px';
+    splitLabel.textContent = 'คนหาร (ใช้กับทุกรายการที่เพิ่ม)';
+    body.appendChild(splitLabel);
+    var splitChips = document.createElement('div');
+    splitChips.className = 'chip-group';
+    state.people.forEach(function(p, idx){
+      var chip = document.createElement('div');
+      chip.className = 'chip' + (scanState.split.indexOf(p.id) > -1 ? ' selected' : '');
+      chip.appendChild(avatarEl(p, idx));
+      var span = document.createElement('span'); span.textContent = p.name; chip.appendChild(span);
+      chip.addEventListener('click', function(){
+        var i = scanState.split.indexOf(p.id);
+        if(i>-1) scanState.split.splice(i,1); else scanState.split.push(p.id);
+        renderScanBody();
+      });
+      splitChips.appendChild(chip);
+    });
+    body.appendChild(splitChips);
+
+    var payerLabel = document.createElement('div');
+    payerLabel.className = 'field-label';
+    payerLabel.style.margin = '16px 0 8px';
+    payerLabel.textContent = 'คนจ่าย';
+    body.appendChild(payerLabel);
+    var payerChips = document.createElement('div');
+    payerChips.className = 'chip-group';
+    state.people.forEach(function(p, idx){
+      var chip = document.createElement('div');
+      chip.className = 'chip' + (scanState.payer === p.id ? ' selected' : '');
+      chip.appendChild(avatarEl(p, idx));
+      var span = document.createElement('span'); span.textContent = p.name; chip.appendChild(span);
+      chip.addEventListener('click', function(){ scanState.payer = p.id; renderScanBody(); });
+      payerChips.appendChild(chip);
+    });
+    body.appendChild(payerChips);
+
+    var confirmBtn = document.createElement('button');
+    confirmBtn.className = 'btn btn-primary btn-block';
+    confirmBtn.style.marginTop = '18px';
+    confirmBtn.textContent = 'เพิ่ม ' + scanState.items.length + ' รายการ';
+    confirmBtn.addEventListener('click', confirmScanItems);
+    body.appendChild(confirmBtn);
+  }
+
+  function buildScanRow(row){
+    var r = document.createElement('div');
+    r.className = 'scan-row';
+    var nameInput = document.createElement('input');
+    nameInput.className = 'input scan-name';
+    nameInput.value = row.name;
+    nameInput.maxLength = 25;
+    nameInput.addEventListener('input', function(e){ row.name = e.target.value; });
+
+    var priceInput = document.createElement('input');
+    priceInput.className = 'input scan-price';
+    priceInput.inputMode = 'decimal';
+    priceInput.value = row.price || '';
+    priceInput.addEventListener('input', function(e){
+      row.price = parseFloat(e.target.value) || 0;
+      var totalEl = document.querySelector('.scan-total b');
+      if(totalEl){
+        var total = scanState.items.reduce(function(s,it){return s+(it.price||0);},0) * (1+(scanState.servicePct||0)/100) * (1+(scanState.taxPct||0)/100);
+        totalEl.textContent = fmt(total) + '฿';
+      }
+    });
+
+    var delBtn = document.createElement('button');
+    delBtn.className = 'item-del';
+    delBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 12a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2L7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    delBtn.addEventListener('click', function(){
+      scanState.items = scanState.items.filter(function(it){return it.id !== row.id;});
+      renderScanBody();
+    });
+
+    r.appendChild(nameInput); r.appendChild(priceInput); r.appendChild(delBtn);
+    return r;
+  }
+
+  function confirmScanItems(){
+    var validRows = scanState.items.filter(function(it){ return it.name.trim() && it.price > 0; });
+    if(validRows.length === 0){ showToast('ไม่มีรายการที่จะเพิ่ม'); return; }
+    if(scanState.split.length === 0){ showToast('เลือกคนหารอย่างน้อย 1 คน'); return; }
+    if(!scanState.payer){ showToast('เลือกคนจ่าย'); return; }
+
+    var today = todayStr();
+    validRows.forEach(function(it){
+      state.items.push({
+        id: 'i'+(nextItemId++),
+        name: it.name.trim(),
+        price: it.price,
+        servicePct: scanState.servicePct || 0,
+        taxPct: scanState.taxPct || 0,
+        split: scanState.split.slice(),
+        paidBy: scanState.payer,
+        date: today
+      });
+    });
+    closeScanSheet();
+    renderAll();
+    showToast('เพิ่ม ' + validRows.length + ' รายการจากใบเสร็จแล้ว');
+  }
+
+  /* ---------------- Wiring ---------------- */
+  document.getElementById('addPersonBtn').addEventListener('click', addPerson);
+  document.getElementById('newPersonInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') addPerson();
+  });
+
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ setTab(btn.dataset.tab); });
+  });
+
+  document.getElementById('billTitleInput').addEventListener('input', function(e){
+    state.billTitle = e.target.value || 'บิลไม่มีชื่อ';
+  });
+  document.getElementById('billTitleInput').addEventListener('focus', function(e){
+    if(e.target.value === 'บิลไม่มีชื่อ') e.target.select();
+  });
+
+  document.getElementById('closeScanSheet').addEventListener('click', closeScanSheet);
+  document.getElementById('scanOverlay').addEventListener('click', function(e){
+    if(e.target === document.getElementById('scanOverlay')) closeScanSheet();
+  });
+
+  document.getElementById('closeItemSheet').addEventListener('click', closeItemSheet);
+  document.getElementById('itemOverlay').addEventListener('click', function(e){
+    if(e.target === document.getElementById('itemOverlay')) closeItemSheet();
+  });
+  document.getElementById('submitItemBtn').addEventListener('click', submitItem);
+  document.getElementById('itemNameInput').addEventListener('input', function(e){
+    document.getElementById('itemNameCount').textContent = e.target.value.length + ' / 25';
+  });
+  document.getElementById('itemPriceInput').addEventListener('input', updateTotalPreview);
+  document.getElementById('serviceInput').addEventListener('input', updateTotalPreview);
+  document.getElementById('taxInput').addEventListener('input', updateTotalPreview);
+  document.getElementById('toggleChargeBtn').addEventListener('click', function(){
+    state.chargeOpen = !state.chargeOpen;
+    document.getElementById('chargeFields').style.display = state.chargeOpen ? 'block' : 'none';
+    this.textContent = state.chargeOpen ? 'ไม่มีเซอร์วิสชาร์จ/ภาษี' : '+ เพิ่มเซอร์วิสชาร์จ/ภาษี';
+  });
+  document.getElementById('selectAllBtn').addEventListener('click', function(){
+    if(state.draft.split.length === state.people.length){
+      state.draft.split = [];
+      this.textContent = 'เลือกทุกคน';
+    } else {
+      state.draft.split = state.people.map(function(p){return p.id;});
+    }
+    renderChips();
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', function(){
+    document.getElementById('clearOverlay').classList.add('open');
+  });
+  document.getElementById('cancelClear').addEventListener('click', function(){
+    document.getElementById('clearOverlay').classList.remove('open');
+  });
+  document.getElementById('confirmClear').addEventListener('click', function(){
+    state.items = [];
+    state.settled = {};
+    document.getElementById('clearOverlay').classList.remove('open');
+    renderAll();
+    showToast('ล้างข้อมูลแล้ว');
+  });
+  document.getElementById('clearOverlay').addEventListener('click', function(e){
+    if(e.target === this) this.classList.remove('open');
+  });
+
+  document.getElementById('lineLoginBtn').addEventListener('click', function(){
+    if(typeof liff !== 'undefined' && liff.login) liff.login();
+  });
+  document.getElementById('lineProfileChip').addEventListener('click', function(){
+    if(!lineProfile) return;
+    var already = state.people.some(function(p){ return p.name === lineProfile.displayName; });
+    if(already){ showToast('เพิ่มไปแล้ว'); return; }
+    if(state.people.length >= 20){ showToast('เพิ่มได้สูงสุด 20 คน'); return; }
+    state.people.push({id:'p'+(nextPersonId++), name: lineProfile.displayName.slice(0,10)});
+    renderAll();
+    showToast('เพิ่ม ' + lineProfile.displayName + ' แล้ว');
+  });
+
+  document.getElementById('shareBtn').addEventListener('click', function(){
+    var bal = computeBalances();
+    var result = simplifySettlement(bal);
+    var lines = result.txs.length
+      ? result.txs.map(function(tx){ return personById(tx.from).name + ' → ' + personById(tx.to).name + ' : ' + fmt(tx.amount) + '฿'; })
+      : ['ยอดเท่ากันหมดแล้ว ไม่มีใครต้องโอน'];
+    var summaryText = 'บิล "' + state.billTitle + '"\n' + lines.join('\n');
+
+    if(typeof liff !== 'undefined' && liff.isLoggedIn && liff.isLoggedIn() && liff.isApiAvailable && liff.isApiAvailable('shareTargetPicker')){
+      liff.shareTargetPicker([{ type:'text', text: summaryText }]).catch(function(){
+        showToast('แชร์ไม่สำเร็จ');
+      });
+      return;
+    }
+    if(navigator.share){
+      navigator.share({title:'หารด้วยกัน', text:summaryText}).catch(function(){});
+    } else if(navigator.clipboard){
+      navigator.clipboard.writeText(summaryText).then(function(){ showToast('คัดลอกข้อความแชร์แล้ว'); });
+    }
+  });
+
+  window.addEventListener('resize', positionIndicator);
+
+  renderAll();
+  initLiff();
+  setTimeout(positionIndicator, 30);
+})();
+</script>
+</body>
+</html>
