@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>หารด้วยกัน — หารบิลกับเพื่อน</title>
+<title>Splitzy — Split bills with friends</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -442,8 +442,8 @@
         </svg>
       </div>
       <div class="brand-text">
-        <div class="brand-name">หารด้วยกัน</div>
-        <div class="brand-sub">หารค่าใช้จ่ายกับเพื่อน แบบไม่ปวดหัว</div>
+        <div class="brand-name">Splitzy</div>
+        <div class="brand-sub">Split bills with friends.</div>
       </div>
       <button class="icon-btn" id="lineLoginBtn" title="เข้าสู่ระบบด้วยไลน์" style="display:none;">
         <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C6.5 2 2 5.6 2 10c0 3.9 3.4 7.1 8 7.8v2.7c0 .3.3.5.6.4l3.6-2.2c4.6-.6 7.8-3.9 7.8-8.7C22 5.6 17.5 2 12 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
@@ -478,7 +478,7 @@
         </div>
         <div class="stat">
           <div class="stat-label">คน</div>
-          <div class="stat-value" id="statPeople">2</div>
+          <div class="stat-value" id="statPeople">0</div>
         </div>
       </div>
 
@@ -613,7 +613,7 @@
      3. คัดลอก LIFF ID ที่ได้มาแทนที่ค่าด้านล่างนี้
      ก่อนตั้งค่า แอปนี้ยังใช้งานได้ปกติในเบราว์เซอร์ทั่วไป (ฟีเจอร์ไลน์จะถูกซ่อนไว้)
      ===================================================================== */
-  var LIFF_ID = 'YOUR_LIFF_ID'; // TODO: ใส่ LIFF ID จริงตรงนี้ เช่น '1234567890-AbCdEfGh'
+  var LIFF_ID = '2010621451-1WkrbHbd';
 
   var lineProfile = null;
 
@@ -646,17 +646,14 @@
 
   var state = {
     billTitle: 'บิลไม่มีชื่อ',
-    people: [
-      {id:'p1', name:'A'},
-      {id:'p2', name:'B'}
-    ],
+    people: [],
     items: [],
     settled: {},
     activeTab: 'people',
     chargeOpen: false,
     draft: { split: [], payer: null }
   };
-  var nextPersonId = 3;
+  var nextPersonId = 1;
   var nextItemId = 1;
 
   function colorFor(index){ return AVATAR_COLORS[index % AVATAR_COLORS.length]; }
@@ -756,6 +753,18 @@
     var bal = computeBalances();
     var tbody = document.getElementById('peopleTbody');
     tbody.innerHTML = '';
+
+    if(state.people.length === 0){
+      var trEmpty = document.createElement('tr');
+      var tdEmpty = document.createElement('td');
+      tdEmpty.colSpan = 4;
+      tdEmpty.style.cssText = 'text-align:center; color:var(--ink-faint); padding:22px 0; font-size:13px;';
+      tdEmpty.textContent = 'ยังไม่มีรายชื่อ เพิ่มเพื่อนของคุณด้านล่าง';
+      trEmpty.appendChild(tdEmpty);
+      tbody.appendChild(trEmpty);
+      return;
+    }
+
     state.people.forEach(function(p, idx){
       var b = bal[p.id] || {paid:0,owed:0};
       var credit = Math.max(0, b.paid - b.owed);
@@ -769,14 +778,12 @@
       nm.className = 'person-name';
       nm.textContent = p.name;
       cell.appendChild(nm);
-      if(state.people.length > 1){
-        var rm = document.createElement('button');
-        rm.className = 'remove-x';
-        rm.textContent = '✕';
-        rm.title = 'ลบ '+p.name;
-        rm.addEventListener('click', function(){ removePerson(p.id); });
-        cell.appendChild(rm);
-      }
+      var rm = document.createElement('button');
+      rm.className = 'remove-x';
+      rm.textContent = '✕';
+      rm.title = 'ลบ '+p.name;
+      rm.addEventListener('click', function(){ removePerson(p.id); });
+      cell.appendChild(rm);
       tdName.appendChild(cell);
 
       var tdPaid = document.createElement('td');
@@ -995,7 +1002,6 @@
   }
 
   function removePerson(id){
-    if(state.people.length <= 1){ showToast('ต้องมีอย่างน้อย 1 คน'); return; }
     state.people = state.people.filter(function(p){return p.id!==id;});
     state.items.forEach(function(it){
       it.split = it.split.filter(function(pid){return pid!==id;});
@@ -1052,6 +1058,11 @@
 
   /* ---------------- Add item sheet ---------------- */
   function openItemSheet(){
+    if(state.people.length === 0){
+      showToast('เพิ่มรายชื่อเพื่อนก่อนนะ');
+      setTab('people');
+      return;
+    }
     document.getElementById('itemNameInput').value = '';
     document.getElementById('itemPriceInput').value = '';
     document.getElementById('serviceInput').value = '';
@@ -1147,6 +1158,11 @@
   var nextScanRowId = 1;
 
   function openScanSheet(){
+    if(state.people.length === 0){
+      showToast('เพิ่มรายชื่อเพื่อนก่อนนะ');
+      setTab('people');
+      return;
+    }
     scanState.step = 'upload';
     scanState.base64 = null;
     scanState.mediaType = null;
@@ -1526,7 +1542,7 @@
       return;
     }
     if(navigator.share){
-      navigator.share({title:'หารด้วยกัน', text:summaryText}).catch(function(){});
+      navigator.share({title:'Splitzy', text:summaryText}).catch(function(){});
     } else if(navigator.clipboard){
       navigator.clipboard.writeText(summaryText).then(function(){ showToast('คัดลอกข้อความแชร์แล้ว'); });
     }
